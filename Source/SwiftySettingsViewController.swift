@@ -38,6 +38,8 @@ open class SwiftySettingsViewController : UISplitViewController {
     @IBInspectable open var tintColor: UIColor? = nil
     @IBInspectable open var separatorColor: UIColor? = UIColor.swiftySettingsDefaultHeaderGray()
     @IBInspectable open var selectionColor: UIColor? = UIColor.lightGray
+    @IBInspectable open var blackNavigationBar: Bool = false
+    @IBInspectable open var transluscentNavigationBar: Bool = false
     @IBInspectable open var forceRoundedCorners: Bool = false
 
     open var emptyDetailViewController: UIViewController {
@@ -77,7 +79,14 @@ open class SwiftySettingsViewController : UISplitViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self;
+
+        self.setNeedsStatusBarAppearanceUpdate()
     }
+
+    override open var preferredStatusBarStyle: UIStatusBarStyle {
+        return blackNavigationBar ? .lightContent : .default
+    }
+
 }
 
 // MARK: - UISplitViewControllerDelegate
@@ -96,9 +105,18 @@ private extension SwiftySettingsViewController {
     func initialSetup() {
         let masterNC = UINavigationController()
         masterNC.viewControllers = [SettingsViewController(appearance:  SettingsViewController.Appearance(splitVC: self))]
+        masterNC.navigationBar.barStyle = blackNavigationBar ? UIBarStyle.black : UIBarStyle.default
+        masterNC.navigationBar.isTranslucent = transluscentNavigationBar
 
         let detailNC = UINavigationController()
         detailNC.viewControllers = [emptyDetailViewController]
+
+        detailNC.navigationBar.barStyle = blackNavigationBar ? UIBarStyle.black : UIBarStyle.default
+        detailNC.navigationBar.isTranslucent = transluscentNavigationBar
+
+        if (blackNavigationBar) {
+            detailNC.navigationBar.tintColor = UIColor.white
+        }
 
         viewControllers = [masterNC, detailNC]
     }
